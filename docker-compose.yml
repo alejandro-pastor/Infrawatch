@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  api:
+    build: ./app
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - cache_redis
+      - db_postgres
+
+  cache_redis:
+    image: redis:7-alpine
+    container_name: cache_redis
+
+  db_postgres:
+    image: postgres:16-alpine
+    container_name: db_postgres
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
