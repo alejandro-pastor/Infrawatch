@@ -1,5 +1,5 @@
 FROM python:3.11-slim
-
+RUN apt-get update && apt-get remove -y --allow-remove-essential perl-base && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 COPY requirements.txt .
