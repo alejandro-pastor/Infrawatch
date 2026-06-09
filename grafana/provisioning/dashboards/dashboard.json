@@ -1,0 +1,71 @@
+{
+  "title": "InfraWatch",
+  "uid": "infrawatch",
+  "version": 1,
+  "schemaVersion": 39,
+  "tags": ["infrawatch"],
+  "timezone": "browser",
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "title": "Request Rate",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(http_requests_total[$__rate_interval])",
+          "legendFormat": "{{handler}} {{method}} {{status}}"
+        }
+      ],
+      "lines": true,
+      "fill": 1,
+      "linewidth": 2,
+      "xaxis": { "mode": "time" },
+      "yaxes": [
+        { "format": "rps", "label": "Requests/s" },
+        { "format": "short" }
+      ]
+    },
+    {
+      "title": "P95 Latency",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[$__rate_interval])) by (le, handler, method))",
+          "legendFormat": "{{handler}} {{method}}"
+        }
+      ],
+      "lines": true,
+      "fill": 1,
+      "linewidth": 2,
+      "xaxis": { "mode": "time" },
+      "yaxes": [
+        { "format": "s", "label": "Latency" },
+        { "format": "short" }
+      ]
+    },
+    {
+      "title": "API Requests (Custom Counter)",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+      "targets": [
+        {
+          "expr": "api_requests_total",
+          "legendFormat": "API visits"
+        }
+      ],
+      "lines": true,
+      "fill": 1,
+      "linewidth": 2,
+      "xaxis": { "mode": "time" },
+      "yaxes": [
+        { "format": "short", "label": "Total requests" },
+        { "format": "short" }
+      ]
+    }
+  ]
+}

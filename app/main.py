@@ -1,9 +1,15 @@
 from fastapi import FastAPI
 from redis import Redis
 from psycopg2 import connect
+from prometheus_client import Counter
+from prometheus_fastapi_instrumentator import Instrumentator
 import os
 
 app = FastAPI()
+
+Instrumentator().instrument(app).expose(app)
+
+REQUEST_COUNT = Counter("api_requests_total", "Número total de peticiones a la API")
 
 redis_client = Redis(host=os.getenv("REDIS_HOST", "localhost"), port=6379)
 
@@ -17,6 +23,7 @@ def get_db_connection():
 
 @app.get("/")
 def read_root():
+    REQUEST_COUNT.inc()
     hits = redis_client.incr("hits")
     conn = get_db_connection()
     cursor = conn.cursor()

@@ -220,3 +220,6 @@ __marimo__/
 
 # Backup
 *.backup
+
+# OpenCode configuration (personal, not project-wide)
+opencode.json
