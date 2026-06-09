@@ -223,3 +223,4 @@ __marimo__/
 
 # OpenCode configuration (personal, not project-wide)
 opencode.json
+.opencode/
