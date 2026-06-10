@@ -3,7 +3,7 @@
 > Sistema de observabilidad cloud-native (self-hosted) para aplicaciones containerizadas,
 > con monitorización en tiempo real, CI/CD automatizado y seguridad integrada.
 
-![CI/CD](https://github.com/alejandro-pastor/Infrawatch/actions/workflows/docker.yml/badge.svg)
+![CI/CD](https://github.com/alejandro-pastor/Infrawatch/actions/workflows/ci-cd.yml/badge.svg)
 ![Docker Hub](https://img.shields.io/docker/pulls/pastorops/infrawatch)
 ![Security](https://img.shields.io/badge/security-Trivy-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
