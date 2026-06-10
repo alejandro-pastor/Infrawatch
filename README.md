@@ -78,7 +78,7 @@ El panel de control incluye tres métricas principales:
 - **P95 Latency** — Latencia en el percentil 95
 - **API Requests** — Contador acumulado de llamadas a la API
 
-*(Captura del dashboard próximamente)*
+![Grafana Dashboard](docs/grafana-dashboard.png)
 
 ---
 
