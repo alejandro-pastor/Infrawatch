@@ -42,7 +42,7 @@ Grafana    (3000) ←── datasource      ──→ Prometheus
 ```bash
 git clone https://github.com/alejandro-pastor/Infrawatch.git
 cd Infrawatch
-cp .env.example .env      # configura tus variables de entorno
+# Asegúrate de tener un archivo .env con las variables de entorno configuradas
 docker-compose up -d --build
 ```
 
