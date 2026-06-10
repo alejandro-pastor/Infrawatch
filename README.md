@@ -26,13 +26,13 @@
 ## Arquitectura
 
 ```
-Cliente → FastAPI (8000) → PostgreSQL  (persistencia)
-                         → Redis       (caché)
+Cliente → Nginx (8080) → FastAPI (8000) → PostgreSQL  (persistencia)
+                                        → Redis       (caché)
 
 Prometheus (9090) ←── scrape /metrics ──→ FastAPI
 Grafana    (3000) ←── datasource      ──→ Prometheus
 
-5 servicios orquestados con Docker Compose en red interna aislada.
+6 servicios orquestados con Docker Compose en red interna aislada.
 ```
 
 ---
@@ -51,6 +51,7 @@ docker-compose up -d --build
 | `8000` | FastAPI (API REST) |
 | `9090` | Prometheus |
 | `3000` | Grafana |
+| `8080` | Nginx (reverse proxy) |
 
 > **Nota:** Las credenciales se gestionan mediante variables de entorno (`.env`).
 > Nunca se incluyen en el repositorio.
@@ -102,11 +103,13 @@ El panel de control incluye tres métricas principales:
 | Pipeline CI/CD con GitHub Actions | ✅ Completado |
 | Escaneo de seguridad con Trivy | ✅ Completado |
 | Monitorización con Prometheus + Grafana | ✅ Completado |
+| Nginx como proxy inverso | ✅ Completado |
 | Despliegue en Oracle Cloud (Free Tier) | 🔜 Próximo |
 | Alertas automáticas en Grafana (email/Slack) | 🔜 Próximo |
 | Tests automatizados con pytest | 🔜 Próximo |
 | Logs centralizados con Grafana Loki | 🔜 Próximo |
 | Métricas de PostgreSQL y Redis | 🔜 Próximo |
+
 
 ---
 
