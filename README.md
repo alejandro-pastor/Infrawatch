@@ -63,8 +63,9 @@ docker-compose up -d --build
 Cada `push` a `main` ejecuta automáticamente:
 
 1. **Build** de la imagen Docker
-2. **Escaneo de seguridad** con Trivy — severidad `CRITICAL` provoca fallo del pipeline (`exit-code: 1`)
-3. **Push a Docker Hub** (`pastorops/infrawatch`) — solo si el escaneo pasa
+2. **Tests** con pytest — verifica endpoints, JSON y resiliencia ante fallos de Redis/PostgreSQL
+3. **Escaneo de seguridad** con Trivy — severidad `CRITICAL` provoca fallo del pipeline (`exit-code: 1`)
+4. **Push a Docker Hub** (`pastorops/infrawatch`) — solo si tests y escaneo pasan
 
 Este flujo implementa el principio **Shift-Left Security**: las vulnerabilidades se detectan
 y bloquean antes de que la imagen llegue a producción.
@@ -92,6 +93,22 @@ El panel de control incluye tres métricas principales:
 
 ---
 
+## Tests
+
+La API incluye 5 tests automatizados:
+
+| Test | Tipo | Qué verifica |
+|------|------|-------------|
+| `test_health` | Smoke test | `/health` responde 200 con `{"status": "healthy"}` |
+| `test_root_status` | Smoke test | `/` responde 200 siempre |
+| `test_root_json_fields` | Estructural | El JSON contiene `status`, `total_api_requests` y `database_connected` |
+| `test_root_without_redis` | Resiliencia | La API responde 200 aunque Redis esté caído |
+| `test_root_without_db` | Resiliencia | La API responde 200 aunque PostgreSQL esté caído |
+
+Los tests se ejecutan automáticamente en cada `push` a `main` vía GitHub Actions, **antes** del escaneo de seguridad y del despliegue.
+
+---
+
 ## Estado del proyecto
 
 > 🚧 Proyecto en desarrollo activo
@@ -104,9 +121,9 @@ El panel de control incluye tres métricas principales:
 | Escaneo de seguridad con Trivy | ✅ Completado |
 | Monitorización con Prometheus + Grafana | ✅ Completado |
 | Nginx como proxy inverso | ✅ Completado |
-| Despliegue en Oracle Cloud (Free Tier) | 🔜 Próximo |
+| Despliegue en Oracle Cloud (Free Tier) | ❌ Pospuesto — sin capacidad ARM disponible |
 | Alertas automáticas en Grafana (email/Slack) | 🔜 Próximo |
-| Tests automatizados con pytest | 🔜 Próximo |
+| Tests automatizados con pytest | ✅ Completado |
 | Logs centralizados con Grafana Loki | 🔜 Próximo |
 | Métricas de PostgreSQL y Redis | 🔜 Próximo |
 
