@@ -21,16 +21,26 @@ def get_db_connection():
         password=os.getenv("DB_PASSWORD", "secret")
     )
 
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
 @app.get("/")
 def read_root():
     REQUEST_COUNT.inc()
-    hits = redis_client.incr("hits")
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT version();")
-    db_version = cursor.fetchone()[0]
-    cursor.close()
-    conn.close()
+    try:
+        hits = redis_client.incr("hits")
+    except Exception:
+        hits = 0
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT version();")
+        db_version = cursor.fetchone()[0]
+        cursor.close()
+        conn.close()
+    except Exception:
+        db_version = "unavailable"
     return {
         "status": "Cloud Environment Operational",
         "total_api_requests": hits,
