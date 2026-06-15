@@ -19,6 +19,7 @@
 | **Contenedores** | Docker, Docker Compose |
 | **Monitorización** | Prometheus, Grafana |
 | **Alerting** | Alertmanager + Slack |
+| **Log Aggregation** | Promtail + Loki |
 | **CI/CD** | GitHub Actions |
 | **Seguridad** | Trivy (escaneo de vulnerabilidades) |
 
@@ -33,6 +34,9 @@ Cliente → Nginx (8080) → FastAPI (8000) → PostgreSQL  (persistencia)
 Prometheus (9090) ←── scrape /metrics ──→ FastAPI
                  ──→ Alertmanager (9093) ──→ Slack (#alerts-infra)
 Grafana    (3000) ←── datasource      ──→ Prometheus
+                 ←── datasource      ──→ Loki (3100)
+                              ↑
+                      Promtail (recoge logs)
 
 7 servicios orquestados con Docker Compose en red interna aislada.
 ```
@@ -84,6 +88,31 @@ El panel de control incluye tres métricas principales:
 - **API Requests** — Contador acumulado de llamadas a la API
 
 ![Grafana Dashboard](docs/grafana-dashboard.png)
+
+---
+
+## Pipeline de Logs
+
+```
+Contenedores → Promtail (recoge) → Loki (almacena) → Grafana (visualiza)
+```
+
+| Componente | Puerto | Función |
+|------------|--------|---------|
+| Promtail | 9080 | Recoge logs de Docker y los envía a Loki |
+| Loki | 3100 | Almacena y indexa logs para búsqueda mediante LogQL |
+| Grafana | 3000 | Visualiza logs en el panel "Explore" |
+
+---
+
+## Decisiones Técnicas
+
+| Necesidad | Elegimos | Alternativa descartada | Por qué |
+|-----------|----------|----------------------|---------|
+| Log aggregation | **Loki + Promtail** | ELK (Elasticsearch) | Loki es 10x más ligero, se integra nativamente con Grafana, y usa labels como Prometheus |
+| Alerting | **Alertmanager** | Grafana Alerting nativo | Alertmanager es el estándar de la industria, ofrece deduplicación de alertas mediante gossip protocol, y permite HA (alta disponibilidad) |
+| Orquestación | **Docker Compose** | Kubernetes | Docker Compose es suficiente para un proyecto single-server con 7 contenedores |
+| Monitoreo externo | **UptimeRobot** | Monitoreo interno | Un dead-man's switch requiere vigilancia externa — el sistema de monitoreo no puede vigilarse a sí mismo |
 
 ---
 
@@ -156,7 +185,7 @@ Los tests se ejecutan automáticamente en cada `push` a `main` vía GitHub Actio
 | Despliegue en Oracle Cloud (Free Tier) | ❌ Pospuesto — sin capacidad ARM disponible |
 | Production Hardening (non-root, health checks, resource limits) | 🔜 Próximo |
 | HA Alertmanager (alta disponibilidad) | 🔜 Próximo |
-| Logs estructurados JSON + Loki | 🔜 Próximo |
+| Logs estructurados JSON (Promtail + Loki) | 🔜 Próximo |
 | Métricas de PostgreSQL y Redis | 🔜 Próximo |
 
 
