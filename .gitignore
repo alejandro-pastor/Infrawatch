@@ -224,3 +224,6 @@ __marimo__/
 # OpenCode configuration (personal, not project-wide)
 opencode.json
 .opencode/
+
+# InfraWatch: alertmanager config contains Slack webhook URL (secret)
+alertmanager.yml

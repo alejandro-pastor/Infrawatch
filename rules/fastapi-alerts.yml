@@ -1,0 +1,29 @@
+groups:
+  - name: fastapi-alerts
+    rules:
+      - alert: APIDown
+        expr: up{job="fastapi-app"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "FastAPI application is DOWN"
+          description: "La API no responde desde hace más de 2 minutos."
+
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="fastapi-app"}[5m])) by (le)) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "P95 latency exceeds 2 seconds"
+          description: "La latencia del percentil 95 supera los 2 segundos."
+
+      - alert: LowRequestRate
+        expr: sum(rate(http_requests_total{job="fastapi-app"}[5m])) < 0.1 and up{job="fastapi-app"} == 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Abnormally low request rate"
+          description: "Las peticiones son casi 0 pero la API está arriba."

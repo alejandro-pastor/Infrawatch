@@ -1,7 +1,7 @@
 # InfraWatch 🔭
 
 > Sistema de observabilidad cloud-native (self-hosted) para aplicaciones containerizadas,
-> con monitorización en tiempo real, CI/CD automatizado y seguridad integrada.
+> con monitorización en tiempo real, alertas automatizadas, CI/CD y seguridad integrada.
 
 ![CI/CD](https://github.com/alejandro-pastor/Infrawatch/actions/workflows/ci-cd.yml/badge.svg)
 ![Docker Hub](https://img.shields.io/docker/pulls/pastorops/infrawatch)
@@ -18,6 +18,7 @@
 | **Bases de datos** | PostgreSQL 16, Redis 7 |
 | **Contenedores** | Docker, Docker Compose |
 | **Monitorización** | Prometheus, Grafana |
+| **Alerting** | Alertmanager + Slack |
 | **CI/CD** | GitHub Actions |
 | **Seguridad** | Trivy (escaneo de vulnerabilidades) |
 
@@ -30,9 +31,10 @@ Cliente → Nginx (8080) → FastAPI (8000) → PostgreSQL  (persistencia)
                                         → Redis       (caché)
 
 Prometheus (9090) ←── scrape /metrics ──→ FastAPI
+                 ──→ Alertmanager (9093) ──→ Slack (#alerts-infra)
 Grafana    (3000) ←── datasource      ──→ Prometheus
 
-6 servicios orquestados con Docker Compose en red interna aislada.
+7 servicios orquestados con Docker Compose en red interna aislada.
 ```
 
 ---
@@ -52,6 +54,7 @@ docker-compose up -d --build
 | `9090` | Prometheus |
 | `3000` | Grafana |
 | `8080` | Nginx (reverse proxy) |
+| `9093` | Alertmanager (alerting) |
 
 > **Nota:** Las credenciales se gestionan mediante variables de entorno (`.env`).
 > Nunca se incluyen en el repositorio.
@@ -84,12 +87,39 @@ El panel de control incluye tres métricas principales:
 
 ---
 
+## Alerting
+
+El sistema incluye alertas automatizadas que monitorizan la salud de la API en tiempo real:
+
+| Alerta | Severidad | Condición | Duración |
+|--------|-----------|-----------|----------|
+| `APIDown` | 🔴 CRITICAL | API no responde (up == 0) | > 2 minutos |
+| `HighLatency` | 🟡 WARNING | P95 latencia > 2 segundos | > 5 minutos |
+| `LowRequestRate` | 🟡 WARNING | Peticiones casi 0 pero API arriba | > 10 minutos |
+
+### Flujo de alertas
+
+```
+Prometheus (evalúa reglas) → Alertmanager (deduplica + agrupa) → Slack (#alerts-infra)
+```
+
+**Configuración:**
+- **Canal de Slack:** `#alerts-infra`
+- **Resolución:** Notificación automática cuando el problema se resuelve (`send_resolved: true`)
+- **Agrupación:** Por `alertname` y `severity` para evitar spam
+- **Reenvío:** Cada 4h si la alerta no se resuelve
+
+Las reglas están definidas en `rules/fastapi-alerts.yml` y la configuración de Alertmanager en `alertmanager.yml` (este último en `.gitignore` por contener el webhook URL).
+
+---
+
 ## Seguridad
 
 - **Trivy en pipeline:** bloquea el despliegue ante vulnerabilidades críticas
 - **Imagen optimizada:** `python:3.11-slim` con `perl-base` eliminado → CVEs críticos reducidos a 0
 - **Gestión de secretos:** variables de entorno con `.env` + GitHub Secrets para el pipeline
 - **Principio de mínimo privilegio** aplicado en todos los tokens de acceso
+- **Webhook URL protegido:** `alertmanager.yml` está en `.gitignore` para evitar exposición del secreto de Slack
 
 ---
 
@@ -121,9 +151,9 @@ Los tests se ejecutan automáticamente en cada `push` a `main` vía GitHub Actio
 | Escaneo de seguridad con Trivy | ✅ Completado |
 | Monitorización con Prometheus + Grafana | ✅ Completado |
 | Nginx como proxy inverso | ✅ Completado |
-| Despliegue en Oracle Cloud (Free Tier) | ❌ Pospuesto — sin capacidad ARM disponible |
-| Alertas automáticas en Grafana (email/Slack) | 🔜 Próximo |
+| Alertas automáticas con Alertmanager + Slack | ✅ Completado |
 | Tests automatizados con pytest | ✅ Completado |
+| Despliegue en Oracle Cloud (Free Tier) | ❌ Pospuesto — sin capacidad ARM disponible |
 | Logs centralizados con Grafana Loki | 🔜 Próximo |
 | Métricas de PostgreSQL y Redis | 🔜 Próximo |
 
