@@ -154,7 +154,9 @@ Los tests se ejecutan automáticamente en cada `push` a `main` vía GitHub Actio
 | Alertas automáticas con Alertmanager + Slack | ✅ Completado |
 | Tests automatizados con pytest | ✅ Completado |
 | Despliegue en Oracle Cloud (Free Tier) | ❌ Pospuesto — sin capacidad ARM disponible |
-| Logs centralizados con Grafana Loki | 🔜 Próximo |
+| Production Hardening (non-root, health checks, resource limits) | 🔜 Próximo |
+| HA Alertmanager (alta disponibilidad) | 🔜 Próximo |
+| Logs estructurados JSON + Loki | 🔜 Próximo |
 | Métricas de PostgreSQL y Redis | 🔜 Próximo |
 
 
