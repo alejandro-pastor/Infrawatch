@@ -24,7 +24,6 @@ services:
           cpus: "0.5"
         reservations:
           memory: 256M
-          cpus: "0.25"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -48,7 +47,6 @@ services:
           cpus: "0.5"
         reservations:
           memory: 64M
-          cpus: "0.1"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 15s
@@ -77,7 +75,6 @@ services:
           cpus: "1.0"
         reservations:
           memory: 512M
-          cpus: "0.5"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 15s
@@ -114,7 +111,6 @@ services:
           cpus: "0.5"
         reservations:
           memory: 256M
-          cpus: "0.25"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
       interval: 15s
@@ -148,7 +144,6 @@ services:
           cpus: "0.5"
         reservations:
           memory: 128M
-          cpus: "0.1"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
       interval: 30s
@@ -178,7 +173,6 @@ services:
           cpus: "0.25"
         reservations:
           memory: 32M
-          cpus: "0.05"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/"]
       interval: 30s
@@ -211,7 +205,6 @@ services:
           cpus: "0.25"
         reservations:
           memory: 64M
-          cpus: "0.05"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
       interval: 30s
@@ -243,7 +236,6 @@ services:
           cpus: "0.25"
         reservations:
           memory: 64M
-          cpus: "0.05"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
       interval: 30s
@@ -271,7 +263,6 @@ services:
           cpus: "0.5"
         reservations:
           memory: 128M
-          cpus: "0.25"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3100/ready"]
       interval: 15s
@@ -303,7 +294,6 @@ services:
           cpus: "0.25"
         reservations:
           memory: 64M
-          cpus: "0.05"
     restart: unless-stopped
     logging:
       driver: json-file
