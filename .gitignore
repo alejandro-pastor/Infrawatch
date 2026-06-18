@@ -227,3 +227,6 @@ opencode.json
 
 # InfraWatch: alertmanager config contains Slack webhook URL (secret)
 alertmanager.yml
+
+# Agents configuration
+AGENTS.md
