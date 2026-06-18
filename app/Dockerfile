@@ -1,5 +1,6 @@
 FROM python:3.11.9-slim
 RUN apt-get update && \
+    apt-get upgrade -y && \
     apt-get install -y --no-install-recommends curl && \
     apt-get remove -y --allow-remove-essential perl-base && \
     apt-get autoremove -y && \
