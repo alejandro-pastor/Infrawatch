@@ -23,7 +23,11 @@ jobs:
           tags: pastorops/infrawatch:test
 
       - name: Run tests
-        run: docker run pastorops/infrawatch:test pytest /app/tests/ -v
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/app/tests:/app/tests:ro \
+            pastorops/infrawatch:test \
+            pytest /app/tests/ -v
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
