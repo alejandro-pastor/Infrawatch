@@ -27,3 +27,12 @@ groups:
         annotations:
           summary: "Abnormally low request rate"
           description: "Las peticiones son casi 0 pero la API está arriba."
+
+      - alert: AlertmanagerDown
+        expr: up{job="alertmanager"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Alertmanager is DOWN"
+          description: "Alertmanager no responde desde hace más de 2 minutos. Las alertas NO se están enviando a Slack."

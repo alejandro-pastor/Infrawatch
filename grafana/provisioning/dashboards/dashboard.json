@@ -66,6 +66,64 @@
         { "format": "short", "label": "Total requests" },
         { "format": "short" }
       ]
+    },
+    {
+      "title": "Container CPU Usage (cAdvisor)",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "rate(container_cpu_usage_seconds_total{name!=\"\"}[5m])",
+          "legendFormat": "{{name}}"
+        }
+      ],
+      "lines": true,
+      "fill": 1,
+      "linewidth": 2,
+      "xaxis": { "mode": "time" },
+      "yaxes": [
+        { "format": "percentunit", "label": "CPU" },
+        { "format": "short" }
+      ]
+    },
+    {
+      "title": "Container Memory Usage (cAdvisor)",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 8 },
+      "targets": [
+        {
+          "expr": "container_memory_usage_bytes{name!=\"\"} / 1024 / 1024",
+          "legendFormat": "{{name}}"
+        }
+      ],
+      "lines": true,
+      "fill": 1,
+      "linewidth": 2,
+      "xaxis": { "mode": "time" },
+      "yaxes": [
+        { "format": "decmbytes", "label": "Memory (MB)" },
+        { "format": "short" }
+      ]
+    },
+    {
+      "title": "Container Logs (Loki)",
+      "type": "logs",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 8 },
+      "datasource": { "type": "loki" },
+      "targets": [
+        {
+          "expr": "{container=~\".+\"}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      }
     }
   ]
 }
