@@ -93,10 +93,12 @@ docker-compose up -d --build
 
 Cada `push` a `main` ejecuta automáticamente:
 
-1. **Build** de la imagen Docker
-2. **Tests** con pytest — verifica endpoints, JSON y resiliencia ante fallos de Redis/PostgreSQL
-3. **Escaneo de seguridad** con Trivy — severidad `CRITICAL` provoca fallo del pipeline (`exit-code: 1`)
-4. **Push a Docker Hub** (`pastorops/infrawatch`) — solo si tests y escaneo pasan
+1. **Lint** con Ruff — estilo, bugs comunes y imports sin usar
+2. **Seguridad de código** con Bandit — OWASP Python (hardcoded secrets, SQL injection, crypto débil)
+3. **Build** de la imagen Docker
+4. **Tests** con pytest — verifica endpoints, JSON y resiliencia ante fallos de Redis/PostgreSQL
+5. **Escaneo de seguridad** con Trivy — severidad `CRITICAL` provoca fallo del pipeline (`exit-code: 1`)
+6. **Push a Docker Hub** (`pastorops/infrawatch`) — solo si todo lo anterior pasa
 
 Este flujo implementa el principio **Shift-Left Security**: las vulnerabilidades se detectan
 y bloquean antes de que la imagen llegue a producción.
@@ -216,6 +218,8 @@ Dos instancias (`alertmanager-1` y `alertmanager-2`) corren simultáneamente con
 ## Seguridad
 
 - **Trivy en pipeline:** bloquea el despliegue ante vulnerabilidades críticas
+- **Bandit en pipeline:** escaneo OWASP Python para secrets hardcoded, SQL injection y crypto débil
+- **Ruff en linting:** detecta bugs comunes y imports sin usar antes de llegar a producción
 - **Imagen optimizada:** `python:3.11.9-slim` con `perl-base` eliminado → CVEs críticos reducidos a 0
 - **Non-root containers:** FastAPI corre como `appuser` (UID 1000), no como root
 - **Security headers en Nginx:** `X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`, `Referrer-Policy`
