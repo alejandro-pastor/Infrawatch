@@ -216,7 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-.rules
 
 # Backup
 *.backup
@@ -225,8 +224,10 @@ __marimo__/
 opencode.json
 .opencode/
 
+# InfraWatch: personal configuration files (agent rules, memory, context)
+.rules
+.memory.md
+AGENTS.md
+
 # InfraWatch: alertmanager config contains Slack webhook URL (secret)
 alertmanager.yml
-
-# Agents configuration
-AGENTS.md

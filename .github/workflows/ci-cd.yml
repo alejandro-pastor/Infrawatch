@@ -14,6 +14,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install linters
+        run: pip install ruff bandit
+
+      - name: Run Ruff (lint)
+        run: ruff check app/
+
+      - name: Run Bandit (security)
+        run: bandit -r app/ -x app/tests
+
       - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
